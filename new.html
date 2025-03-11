@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Harvard Lampoon</title>
+    <script src="home.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <h1>The Harvard Lampoon</h1>
+
+    <video autoplay muted loop>
+        <source src="bg.mp4" type="video/mp4">
+    </video>
+
+    <div id="border">
+        <img src="border.png" class="rb">
+        <img src="border.png" class="ru">
+        <img src="border.png" class="lb">
+        <img src="border.png" class="lu">
+        <hr style="left: 50%; bottom: 22px; width: 89%;height: 2px;">
+        <hr style="left: 50%; top: 22px; width: 89%;height: 2px;">
+        <hr style="right: 25px; bottom: 78px; width: 2px;height: 83%;">
+        <hr style="left: 27px; bottom: 78px; width: 2px;height: 83%;">
+    </div>
+
+    <div id = "Homepage Image">
+        <img class="box" src="home1.png">
+        <img style="position: absolute; top: 50%; left: 24%; transform: translate(-50%, -50%); height: 40%;" src="home2.png">
+        <img style="position: absolute; top: 50%; left: 75%; transform: translate(-50%, -50%); height: 35%;" src="home3.png">
+        <img style="position: absolute; top: 57%; left: 56%; transform: translate(-50%, -50%); height: 13%;" src="logo.png">
+    </div>
+    
+    
+    <a href="reading.html">
+        <button class="reading">Get A Reading</button>
+    </a>
+
+    <button style= "position: absolute;left: 350px; bottom: 75px;" class="more-button", id="openpopup1">Masthead</button>
+    <button style= "position: absolute;left: 700px; bottom: 75px;" class="more-button", id="openpopup2">Info</button>
+    
+    <a href="https://www.harvardlampoon.com/read">
+        <button style= "position: absolute;left: 1000px; bottom: 75px;" class="more-button">More</button>
+    </a>
+
+
+    <div id="popup1" class="popup">
+        <div class="popup-content">
+            <div class="popup-txt">
+                <h2>Masthead</h2>
+                <p>(Add Masthead)</p>
+            </div>
+            <img src="article.png" class="popup-image">
+            <button type="button" id="close-button1" class="close-button">X</button>
+        </div>
+    </div>
+
+    <div id="popup2" class="popup">
+        <div class="popup-content">
+            <div class="popup-txt">
+                <h2>Info</h2>
+                <p>(Add Info)</p>
+            </div>
+            <img src="article.png" class="popup-image">
+            <button type="button" id="close-button2" class="close-button">X</button>
+        </div>
+    </div>
+
+</body>
+</html>

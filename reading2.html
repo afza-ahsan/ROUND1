@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script src="tarot.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script defer src="node_modules/swup/dist/swup.min.js"></script>
+    <script defer src="script.js"></script>
+    <title>The Harvard Lampoon</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lavishly+Yours&family=Tangerine:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/reading.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Checkerboard Background (fixed in place) */
+        .checkerboard {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('checkboard.jpg'); /* Your checkerboard image */
+            background-size: cover;
+            background-position: center;
+            z-index: 1;
+            transition: transform 1s ease-out; /* Smooth transition for the checkerboard */
+        }
+
+        /* Moving logo on checkerboard */
+        .moving-image {
+            position: absolute;
+            top: 10%;
+            left: 10%;
+            width: 150px;
+            height: 150px;
+            background-image: url('chess.png');
+            background-size: cover;
+            z-index: 2;
+            animation: moveLShape 6s linear infinite; /* Ensure it's moving for 10 seconds */
+        }
+
+        /* Keyframes for L-shape movement */
+        @keyframes moveLShape {
+            0% {
+                top: 45%; 
+                left: 49%;
+            }
+            25% {
+                left: 49%;  
+                top: 17%;
+            }
+            50% {
+                left: 39%;
+                top: 17%;  
+            }
+            75% {
+                left: 38%;  
+                top: 36%;
+            }
+            100% {
+                left: 28%;
+                top: 36%;  /* Move down vertically to complete the L-shape */
+            }
+        }
+
+        /* New Content that appears after delay */
+        .new-content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: black;
+            z-index: 3;
+            display: none; /* Initially hidden */
+        }
+
+        /* Slide up animation for the new content */
+        .slide-up {
+            transform: translateY(-100%);
+        }
+
+               /* Video background */
+               video {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures the video covers the entire screen */
+            z-index: -1; /* Puts the video behind everything */
+        }
+
+        /* Border images */
+        .rb, .lb, .lu, .ru {
+            width: 100px;
+            position: absolute;
+        }
+
+        .rb {
+            right: 10px;
+            bottom: 10px;
+        }
+
+        .ru {
+            right: 10px;
+            top: 9px;
+            transform: rotate(270deg);
+        }
+
+        .lu {
+            left: 10px;
+            top: 10px;
+            transform: rotate(180deg);
+        }
+
+        .lb {
+            left: 11px;
+            bottom: 9px;
+            transform: rotate(90deg);
+        }
+
+        /* Horizontal lines */
+        hr {
+            position: absolute;  /* Positions the <hr> element absolutely */
+            transform: translateX(-50%);  /* Adjusts the horizontal positioning to center it */
+            border: none;  /* Removes the default border */
+            background-color: #fff1d0;  /* Sets the color of the line */
+        }
+
+        /* Content */
+        .content {
+            position: relative;
+            z-index: 1; /* Content will appear above both the background and the video */
+            text-align: center;
+            color: #fff1d0;
+            padding: 50px;
+        }
+
+        .content h1 {
+            font-size: 350%;
+        }
+
+        .box {
+            height: auto;
+            width: 80%; /* Set width to 50% so it adjusts with screen size */
+            max-width: 600px; /* Prevents the image from becoming too large on wide screens */
+            position: absolute;
+            top: 150px;
+            left: 53%;
+            transform: translateX(-50%); /* Centers the box horizontally */
+        }
+
+        /* Responsive design for smaller screens */
+        @media (max-width: 768px) {
+            .content h1 {
+                font-size: 200%; /* Smaller font size for smaller screens */
+            }
+
+            .box {
+                width: 80%; /* Adjust the width to 80% on smaller screens */
+                max-width: none;
+                top: 100px; /* Adjust the top position for better spacing */
+            }
+
+            /* Adjust horizontal line positioning */
+            hr {
+                width: 90%; /* Reduce the width of the horizontal lines on smaller screens */
+            }
+
+            .rb, .lb, .lu, .ru {
+                width: 80px; /* Resize border images */
+            }
+        }
+
+        @media (max-width: 480px) {
+            .content h1 {
+                font-size: 150%; /* Further reduce font size for very small screens */
+            }
+
+            .box {
+                width: 90%; /* Allow the image to take up more space on very small screens */
+                top: 50px;
+            }
+
+            .rb, .lb, .lu, .ru {
+                width: 60px; /* Further reduce border image size */
+            }
+        }
+
+        .card-container {
+            display: flex;
+            gap: 40px;
+            transition: all 0.5s ease; /* Smooth transition for stacking effect */
+        }
+
+        .card {
+            position: relative;
+            width: 300px; /* Increased size (20% bigger) */
+            height: 480px; /* Increased size (20% bigger) */
+            background-color: #FFF1D0;
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            perspective: 1000px; /* Adds depth to the card flip */
+            animation: hoverUpDown 1.5s ease-in-out infinite; /* Apply initial movement */
+        }
+
+        .card.flipped {
+            animation: none; /* Stop the movement when flipped */
+        }
+
+        .card p {
+            font-size: 14px;
+            color: #555;
+        }
+
+        /* Flip effect */
+        .card .flip-container {
+            width: 100%;
+            height: 100%;
+            position: relative;
+            transform-style: preserve-3d;
+            transition: transform 0.6s; /* Smooth flip transition */
+        }
+
+        .card.flipped .flip-container {
+            transform: rotateY(180deg); /* Apply flip when the 'flipped' class is added */
+        }
+
+        .card .front, .card .back {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden; /* Ensures the back is hidden when flipped */
+        }
+
+        /* Front side of the card */
+        .card .front {
+            background-color: #FFF1D0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 15px;
+        }
+
+        /* Back side of the card */
+        .card .back {
+            background-image: url('carback.png'); /* Add your image to the back */
+            background-size: cover;
+            background-position: center;
+            transform: rotateY(180deg); /* Initially hide the back */
+            border-radius: 15px;
+        }
+
+        /* Keyframes for hover animation */
+        @keyframes hoverUpDown {
+            0% {
+                transform: translateY(0); /* Start at original position */
+            }
+            50% {
+                transform: translateY(-20px); /* Move up by 20px */
+            }
+            100% {
+                transform: translateY(0); /* Move back to original position */
+            }
+        }
+
+        @keyframes moveright {
+            0% {
+                transform: translateX(0) translateY(0); /* Start at original position */
+            }
+            50% {
+                transform: translateX(40%) translateY(20%); /* Move to the right and down */
+            }
+            100% {
+                transform: translateX(80%) translateY(40%); /* Further move to the right and down */
+            }
+        }
+
+        @keyframes move-next {
+            0% {
+                transform: translateX(0) translateY(0); /* Start at original position */
+            }
+            50% {
+                transform: translateX(40%) translateY(20%); /* Move to the right and down */
+            }
+            100% {
+                transform: translateX(80%) translateY(40%); /* Further move to the right and down */
+            }
+        }
+
+        .card-container .card:nth-child(1) {
+            position: absolute;
+            left: 6%;  /* Adjusted for 20% larger card size */
+            top: 15%;  /* Adjusted for better spacing */
+        }
+
+        .card-container .card:nth-child(2) {
+            position: absolute;
+            left: 37%;  /* Adjusted for 20% larger card size */
+            top: 20%;   /* Adjusted for better spacing */
+        }
+
+        .card-container .card:nth-child(3) {
+            position: absolute;
+            left: 71%;  /* Adjusted for 20% larger card size */
+            top: 15%;   /* Adjusted to maintain layout */
+        }
+
+        /* New Content that appears after delay */
+        .new-content {
+            position: absolute;
+            top: 100%; /* Start below the viewport */
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 3;
+            display: none; /* Initially hidden */
+            transition: top 1s ease-in-out; /* Smooth transition */
+        }
+
+        /* Slide-up animation for the new content */
+        .new-content.slide-up {
+            top: 0; /* Move to the top of the viewport when all cards are flipped */
+        }
+
+        /* Add this CSS to move the cards to the right */
+        .card {
+        transition: transform 1s ease; /* Smooth transition for moving the card */
+        }
+
+        .card:nth-child(1).move-right {
+        transform: translateY(5%);
+        transform: translateX(310%); 
+        }
+
+        .card:nth-child(2).move-right {
+        /* Adjust the amount of movement to the right */
+        transform: translateX(125%); 
+        }
+
+        .card:nth-child(3).move-right {
+            transform: translateY(5%);
+            transform: translateX(-65%); 
+        }
+
+        .card:nth-child(1).move-next {
+            transform: translateX(310%);
+            z-index: 1; /* Move the first card behind */
+        }
+
+        .card:nth-child(2).move-next {
+            transform: translateX(125%);
+            z-index: 3; /* Bring the second card to the front */
+        }
+
+        .card:nth-child(3).move-next {
+            transform: translateX(-65%);
+            z-index: 2; /* Move the third card in the middle */
+        }
+
+        /* Initially hide the images and text */
+        .fade-image, .fade-text {
+            opacity: 0; /* Ensure they start as invisible */
+            visibility: hidden; /* Prevents them from interacting with the layout */
+            transition: opacity 2s ease-in-out, visibility 0s linear 0.5s; /* Smooth transition */
+        }
+
+        .fade-text {
+            position: absolute;
+            top: 22%;
+            left: 30%;
+            transform: translate(-50%, -50%);
+            font-size: 24px;
+            font-weight: bold;
+            color: #2A2A2A;
+            font-family: "Lavishly Yours", sans-serif;
+        }
+
+        /* Class to show and fade in the image */
+        .fade-in {
+            visibility: visible; /* Make the element visible */
+            opacity: 1; /* Fade in */
+            transition: opacity 2s ease-in-out; /* Smooth transition */
+        }
+
+        /* Example button styling */
+        .fade-button, .fade1-button, .fade2-button, .fade3-button {
+            font-family: "Lavishly Yours", cursive;
+            color: #fff1d0;
+            font-size: 2em;
+            letter-spacing: 2px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            background: transparent;
+            border: none;
+            border-radius: 2px;
+            border-color: #FFF1D0;
+            opacity: 0;
+            transition: opacity 1.5s ease-in;
+        }
+
+        .fade-button:hover, .fade1-button:hover, .fade2-button:hover, .fade3-button:hover {
+            color: #ffd524;
+        }
+
+        .fade-button.show, .fade1-button.show, .fade2-button.show, .fade3-button.show {
+            opacity: 1;
+        }
+
+
+    </style>
+</head>
+<body>
+    <!-- Checkerboard Image -->
+    <div class="checkerboard" id="checkerboard"></div>
+
+    <!-- Moving Logo -->
+    <div class="moving-image" id="movingImage"></div>
+
+    <!-- New Content (to be shown after delay) -->
+    <div class="new-content" id="newContent">
+        <!-- Your new content here -->
+        <h1 style="text-align: center; padding-top: 20%;">New Website Content</h1>
+    </div>
+
+
+
+<video autoplay muted loop>
+    <source src="bg.mp4" type="video/mp4">
+</video>
+
+<div>
+    <img src="border.png" class="rb">
+    <img src="border.png" class="ru">
+    <img src="border.png" class="lb">
+    <img src="border.png" class="lu">
+    <hr style="left: 50%; bottom: 22px; width: 89%;height: 2px;">
+    <hr style="left: 50%; top: 22px; width: 89%;height: 2px;">
+    <hr style="right: 25px; bottom: 78px; width: 2px;height: 83%;">
+    <hr style="left: 27px; bottom: 78px; width: 2px;height: 83%;">
+</div>
+
+<div class="card-container">
+    <div style="position: absolute; left: 6%; top: 23%;" class="card">   
+        <div class="flip-container">
+            <div class="front">
+                <img src="cardback.png" alt="Card Front Image" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <div class="back">
+                <img src="tarot4.jpg" alt="Card Back Image" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+        </div>
+    </div>
+    <div style="position: absolute; left: 40%; top: 23%;" class="card">    
+        <div class="flip-container">
+            <div class="front">
+                <img src="cardback.png" alt="Card Front Image" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <div class="back">
+                <img src="tarot5.jpg" alt="Card Back Image" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+        </div>
+    </div>        
+    <div style="position: absolute; left: 74%; top: 23%;" class="card">    
+        <div class="flip-container">
+            <div class="front">
+                <img src="cardback.png" alt="Card Front Image" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+            <div class="back">
+                <img src="tarot6.jpg" alt="Card Back Image" style="width:100%; height:100%; object-fit:cover;">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="fade-container">
+    <img style="position: absolute; height: 80%; left:10%; top:10%;" src="article.png" class="fade-image" id = "fadeImage" alt="Article">
+    <div class="fade-text" id="fadeText">
+        <h1>Article 4 Title Goes Here</h1>
+        <p>(Article Content: Lorem ipsum dolor sit amet, cons)</p>  
+    </div>
+
+    <button style= "position: absolute;left: 250px; bottom: 75px;" id="button1" class="fade1-button" class="fade-in-button">Card 1</button>
+    <button style= "position: absolute;left: 400px; bottom: 75px;" id="button2" class="fade2-button" class="fade-in-button">Card 2</button>
+    <button style= "position: absolute;left: 550px; bottom: 75px;" id="button3" class="fade3-button" class="fade-in-button">Card 3</button>
+
+    <a href="new.html">
+        <button style= "position: absolute;left: 1090px; bottom: 50px;" class="fade-button">Home</button>
+    </a>
+    
+    <a href="reading.html">
+        <button style= "position: absolute;left: 1050px; bottom: 95px;" class="fade-button">New Reading</button>
+    </a>
+</div>
+
+<div class="fade-container">
+    <img style="position: absolute; height: 80%; left:10%; top:10%;" src="article.png" class="fade-image" id = "fadeImage2" alt="Article">
+    <div class="fade-text" id="fadeText2">
+        <h1>Article 5 Title Goes Here</h1>
+        <p>(Article Content: Lorem ipsum dolor sit amet, cons)</p>  
+    </div>
+</div>
+
+<div class="fade-container">
+    <img style="position: absolute; height: 80%; left:10%; top:10%;" src="article.png" class="fade-image" id = "fadeImage3" alt="Article">
+    <div class="fade-text" id="fadeText3">
+        <h1>Article 6 Title Goes Here</h1>
+        <p>(Article Content: Lorem ipsum dolor sit amet, cons)</p>  
+    </div>
+</div>
+
+</body>
+</html>
